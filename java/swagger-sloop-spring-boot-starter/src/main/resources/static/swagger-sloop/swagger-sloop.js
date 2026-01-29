@@ -576,7 +576,7 @@
     // Tab Management
     // ============================================
     // Dynamic max tabs based on available width
-    const TAB_WIDTH = 100; // Average tab width in pixels
+    const TAB_WIDTH = 110; // Fixed tab width in pixels (must match CSS)
     const HOME_TAB_WIDTH = 70; // Home tab width
     const TAB_GAP = 6; // Gap between tabs
     const TABS_PADDING = 20; // Left and right padding of tabs bar

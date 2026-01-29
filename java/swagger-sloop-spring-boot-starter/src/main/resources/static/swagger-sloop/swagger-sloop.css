@@ -1285,10 +1285,8 @@ a:hover {
     align-items: center;
     gap: 4px;
     height: 32px;
-    padding: 0 12px;
-    min-width: 0;
-    max-width: 140px;
-    flex: 0 0 auto;
+    width: 110px;
+    padding: 0 10px;
     background: var(--art-bg-card);
     border: 1px solid var(--art-border-color);
     border-radius: 6px;
@@ -1298,6 +1296,7 @@ a:hover {
     transition: var(--art-transition);
     white-space: nowrap;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .art-tab-item:hover {

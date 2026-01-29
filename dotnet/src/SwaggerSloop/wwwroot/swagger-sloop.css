@@ -930,9 +930,15 @@ a:hover {
 }
 
 .art-card-title {
+    display: inline-flex;
+    align-items: center;
     font-size: 14px;
     font-weight: 600;
     color: var(--art-text-primary);
+}
+
+.art-card-title .art-icon {
+    flex-shrink: 0;
 }
 
 .art-card-body {

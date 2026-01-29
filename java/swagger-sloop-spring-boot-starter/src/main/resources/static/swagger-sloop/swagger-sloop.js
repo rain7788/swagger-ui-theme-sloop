@@ -451,7 +451,7 @@
             // 优先显示 summary，其次 operationId，最后显示路径
             const displayName = op.summary || op.operationId || op.path;
             return `
-                        <div class="art-nav-item${op.deprecated ? ' art-deprecated' : ''}" 
+                        <div class="art-nav-item method-${op.method}${op.deprecated ? ' art-deprecated' : ''}" 
                              data-path="${escapeHtml(op.path)}" 
                              data-method="${op.method}">
                             <span class="art-method-badge ${op.method}">${op.method}</span>
@@ -712,7 +712,7 @@
         `;
 
         const apiTabs = state.openTabs.map(tab => `
-            <div class="art-tab-item ${tab.id === state.activeTabId ? 'active' : ''}" 
+            <div class="art-tab-item method-${tab.method} ${tab.id === state.activeTabId ? 'active' : ''}" 
                  data-tab-id="${tab.id}" 
                  onclick="ArtSwagger.activateTab('${tab.id}')">
                 <span class="art-tab-method ${tab.method}">${tab.method.toUpperCase()}</span>

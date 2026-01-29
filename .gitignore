@@ -50,6 +50,9 @@ logs/
 # Dependencies
 node_modules/
 
+# Art-Design-Pro reference (not part of project)
+webxxxx/
+
 # Test results
 TestResults/
 coverage/

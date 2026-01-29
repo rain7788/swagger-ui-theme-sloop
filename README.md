@@ -34,17 +34,17 @@
 ## 📸 Screenshots / 截图
 
 <p align="center">
-  <img src="docs/images/screenshot-doc.jpg" alt="Documentation View" width="80%">
+  <img src="docs/images/screenshot-doc.jpg" alt="Documentation View" width="100%">
 </p>
 <p align="center"><em>Documentation View / 文档视图</em></p>
 
 <p align="center">
-  <img src="docs/images/screenshot-debug.jpg" alt="Debug View" width="80%">
+  <img src="docs/images/screenshot-debug.jpg" alt="Debug View" width="100%">
 </p>
 <p align="center"><em>Debug & Test View / 调试视图</em></p>
 
 <p align="center">
-  <img src="docs/images/screenshot-dark.jpg" alt="Dark Theme" width="80%">
+  <img src="docs/images/screenshot-dark.jpg" alt="Dark Theme" width="100%">
 </p>
 <p align="center"><em>Dark Theme / 暗黑模式</em></p>
 

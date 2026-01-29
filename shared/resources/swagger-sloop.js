@@ -1051,26 +1051,7 @@
                 ` : ''}
 
                 <!-- Request Body Editor -->
-                ${requestBody ? `
-                <div class="art-card">
-                    <div class="art-card-header">
-                        <span class="art-card-title">
-                            <svg class="art-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 6px;"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor"/></svg>
-                            请求体
-                        </span>
-                        <div class="art-card-actions">
-                            <span class="art-card-subtitle">${requestBody.contentType}</span>
-                            <button class="art-btn art-btn-text" onclick="ArtSwagger.formatRequestBody()">
-                                <svg class="art-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z" fill="currentColor"/></svg>
-                                格式化
-                            </button>
-                        </div>
-                    </div>
-                    <div class="art-card-body">
-                        <textarea class="art-input art-textarea art-code-editor" id="requestBodyInput" placeholder="输入 JSON 请求体...">${escapeHtml(requestBody.example || '')}</textarea>
-                    </div>
-                </div>
-                ` : ''}
+                ${requestBody ? renderRequestBodyEditor(requestBody) : ''}
 
                 <!-- Response Section -->
                 <div class="art-card" id="responseCard" style="display: none;">
@@ -1160,6 +1141,89 @@
         });
     }
 
+    // Render request body editor based on content type
+    function renderRequestBodyEditor(requestBody) {
+        const contentType = requestBody.contentType;
+        
+        // For multipart/form-data or x-www-form-urlencoded, render form fields
+        if (contentType === 'multipart/form-data' || contentType === 'application/x-www-form-urlencoded') {
+            const fields = requestBody.fields || [];
+            return `
+                <div class="art-card">
+                    <div class="art-card-header">
+                        <span class="art-card-title">
+                            <svg class="art-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 6px;"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor"/></svg>
+                            ${contentType === 'multipart/form-data' ? '表单数据 (支持文件上传)' : '表单数据'}
+                        </span>
+                        <span class="art-card-subtitle">${contentType}</span>
+                    </div>
+                    <div class="art-card-body" style="padding: 0;">
+                        <table class="art-params-table" id="formFieldsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">字段名</th>
+                                    <th style="width: 15%;">类型</th>
+                                    <th style="width: 8%;">必填</th>
+                                    <th style="width: 57%;">值</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${fields.map(f => `
+                                    <tr>
+                                        <td>
+                                            <code class="art-param-name">${escapeHtml(f.name)}</code>
+                                            ${f.description ? `<div class="art-param-desc">${escapeHtml(f.description)}</div>` : ''}
+                                        </td>
+                                        <td>
+                                            <span class="art-param-type">${f.isFile ? 'file' : escapeHtml(f.type)}</span>
+                                            ${f.format ? `<span class="art-param-format">${escapeHtml(f.format)}</span>` : ''}
+                                        </td>
+                                        <td>${f.required ? '<span class="art-param-required">*</span>' : '-'}</td>
+                                        <td>
+                                            ${f.isFile ? `
+                                                <input type="file" class="art-input art-file-input" 
+                                                       data-form-field="${escapeHtml(f.name)}"
+                                                       data-field-type="file">
+                                            ` : `
+                                                <input type="text" class="art-input art-param-input" 
+                                                       data-form-field="${escapeHtml(f.name)}"
+                                                       data-field-type="${escapeHtml(f.type)}"
+                                                       placeholder="${escapeHtml(f.example || f.default || f.description || '')}"
+                                                       value="${escapeHtml(f.default || '')}">
+                                            `}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // For JSON or other content types, render textarea
+        return `
+            <div class="art-card">
+                <div class="art-card-header">
+                    <span class="art-card-title">
+                        <svg class="art-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 6px;"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor"/></svg>
+                        请求体
+                    </span>
+                    <div class="art-card-actions">
+                        <span class="art-card-subtitle">${contentType}</span>
+                        <button class="art-btn art-btn-text" onclick="ArtSwagger.formatRequestBody()">
+                            <svg class="art-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z" fill="currentColor"/></svg>
+                            格式化
+                        </button>
+                    </div>
+                </div>
+                <div class="art-card-body">
+                    <textarea class="art-input art-textarea art-code-editor" id="requestBodyInput" placeholder="输入 JSON 请求体...">${escapeHtml(requestBody.example || '')}</textarea>
+                </div>
+            </div>
+        `;
+    }
+
     // ============================================
     // Parameter Resolution
     // ============================================
@@ -1193,6 +1257,34 @@
         const body = resolveRef(op.requestBody);
         const content = body.content || {};
 
+        // Check for multipart/form-data (file upload)
+        const multipartContent = content['multipart/form-data'];
+        if (multipartContent) {
+            const schema = resolveRef(multipartContent.schema || {});
+            const fields = resolveFormFields(schema);
+            return {
+                contentType: 'multipart/form-data',
+                required: body.required || false,
+                schema: schema,
+                fields: fields,
+                example: ''
+            };
+        }
+
+        // Check for application/x-www-form-urlencoded
+        const formContent = content['application/x-www-form-urlencoded'];
+        if (formContent) {
+            const schema = resolveRef(formContent.schema || {});
+            const fields = resolveFormFields(schema);
+            return {
+                contentType: 'application/x-www-form-urlencoded',
+                required: body.required || false,
+                schema: schema,
+                fields: fields,
+                example: ''
+            };
+        }
+
         // Prefer JSON
         const jsonContent = content['application/json'];
         if (jsonContent) {
@@ -1217,6 +1309,32 @@
         }
 
         return null;
+    }
+
+    // Resolve form fields from schema for multipart/form-data or x-www-form-urlencoded
+    function resolveFormFields(schema) {
+        const fields = [];
+        if (!schema || !schema.properties) return fields;
+
+        const required = schema.required || [];
+
+        Object.entries(schema.properties).forEach(([name, prop]) => {
+            const resolvedProp = resolveRef(prop);
+            const isFile = resolvedProp.type === 'string' && (resolvedProp.format === 'binary' || resolvedProp.format === 'base64');
+            
+            fields.push({
+                name: name,
+                type: isFile ? 'file' : (resolvedProp.type || 'string'),
+                format: resolvedProp.format,
+                required: required.includes(name),
+                description: resolvedProp.description || '',
+                example: resolvedProp.example,
+                default: resolvedProp.default,
+                isFile: isFile
+            });
+        });
+
+        return fields;
     }
 
     function resolveResponses(op) {
@@ -1374,7 +1492,7 @@
         const activePanel = document.querySelector('.art-tab-panel.active');
         if (!activePanel) return;
 
-        const { url, headers, body } = buildRequest(op, activePanel);
+        const { url, headers, body, isFormData } = buildRequest(op, activePanel);
         const startTime = performance.now();
 
         // Show response card
@@ -1382,11 +1500,18 @@
         if (responseCard) responseCard.style.display = '';
 
         try {
-            const response = await fetch(url, {
+            const fetchOptions = {
                 method: op.method.toUpperCase(),
-                headers,
+                headers: isFormData ? { ...headers } : headers,
                 body: body
-            });
+            };
+            
+            // For FormData, remove Content-Type to let browser set it with boundary
+            if (isFormData) {
+                delete fetchOptions.headers['Content-Type'];
+            }
+            
+            const response = await fetch(url, fetchOptions);
 
             const endTime = performance.now();
             const duration = Math.round(endTime - startTime);
@@ -1426,10 +1551,10 @@
 
             // Generate cURL
             const curlCommand = activePanel.querySelector('#curlCommand');
-            if (curlCommand) curlCommand.textContent = generateCurl(op, url, headers, body);
+            if (curlCommand) curlCommand.textContent = generateCurl(op, url, headers, body, isFormData);
 
             state.lastResponse = responseText;
-            state.lastCurl = generateCurl(op, url, headers, body);
+            state.lastCurl = generateCurl(op, url, headers, body, isFormData);
 
         } catch (error) {
             const endTime = performance.now();
@@ -1450,7 +1575,7 @@
             if (responseHeaders) responseHeaders.textContent = '';
 
             const curlCommand = activePanel.querySelector('#curlCommand');
-            if (curlCommand) curlCommand.textContent = generateCurl(op, url, headers, body);
+            if (curlCommand) curlCommand.textContent = generateCurl(op, url, headers, body, isFormData);
 
             showToast(`请求失败: ${error.message}`, 'error');
         }
@@ -1514,18 +1639,61 @@
             }
         });
 
-        // Request body
+        // Request body - check for form fields first
         let body = null;
-        const bodyInput = panel ? panel.querySelector('#requestBodyInput') : document.getElementById('requestBodyInput');
-        if (bodyInput && bodyInput.value.trim()) {
-            body = bodyInput.value.trim();
-            headers['Content-Type'] = 'application/json';
+        let isFormData = false;
+        const formFields = panel ? panel.querySelectorAll('[data-form-field]') : document.querySelectorAll('[data-form-field]');
+        
+        if (formFields.length > 0) {
+            // Determine content type based on whether there are file inputs
+            const hasFileInput = Array.from(formFields).some(f => f.dataset.fieldType === 'file' && f.files && f.files.length > 0);
+            
+            if (hasFileInput) {
+                // Use FormData for file upload (multipart/form-data)
+                body = new FormData();
+                formFields.forEach(input => {
+                    const name = input.dataset.formField;
+                    if (input.dataset.fieldType === 'file') {
+                        if (input.files && input.files.length > 0) {
+                            body.append(name, input.files[0]);
+                        }
+                    } else {
+                        const value = input.value.trim();
+                        if (value) {
+                            body.append(name, value);
+                        }
+                    }
+                });
+                isFormData = true;
+                // Don't set Content-Type for FormData, browser will set it with boundary
+            } else {
+                // Use URLSearchParams for x-www-form-urlencoded
+                const params = new URLSearchParams();
+                formFields.forEach(input => {
+                    if (input.dataset.fieldType !== 'file') {
+                        const name = input.dataset.formField;
+                        const value = input.value.trim();
+                        if (value) {
+                            params.append(name, value);
+                        }
+                    }
+                });
+                body = params.toString();
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+        } else {
+            // Traditional JSON body
+            const bodyInput = panel ? panel.querySelector('#requestBodyInput') : document.getElementById('requestBodyInput');
+            if (bodyInput && bodyInput.value.trim()) {
+                body = bodyInput.value.trim();
+                headers['Content-Type'] = 'application/json';
+            }
         }
 
-        return { url: url.toString(), headers, body };
+        return { url: url.toString(), headers, body, isFormData };
     }
 
-    function generateCurl(op, url, headers, body) {
+    function generateCurl(op, url, headers, body, isFormData) {
         let curl = `curl -X ${op.method.toUpperCase()} '${url}'`;
 
         Object.entries(headers).forEach(([key, value]) => {
@@ -1533,7 +1701,18 @@
         });
 
         if (body) {
-            curl += ` \\\n  -d '${body.replace(/'/g, "\\'")}'`;
+            if (isFormData) {
+                // For FormData, show form fields
+                for (const [key, value] of body.entries()) {
+                    if (value instanceof File) {
+                        curl += ` \\\n  -F '${key}=@${value.name}'`;
+                    } else {
+                        curl += ` \\\n  -F '${key}=${value}'`;
+                    }
+                }
+            } else {
+                curl += ` \\\n  -d '${body.replace(/'/g, "\\'")}'`;
+            }
         }
 
         return curl;
@@ -1546,6 +1725,11 @@
 
         // 重置参数输入框为默认值（placeholder 或空）
         activePanel.querySelectorAll('.art-param-input').forEach(input => {
+            input.value = '';
+        });
+        
+        // 重置文件输入框
+        activePanel.querySelectorAll('.art-file-input').forEach(input => {
             input.value = '';
         });
 
@@ -1871,8 +2055,8 @@
         if (!op) return;
 
         const activePanel = document.querySelector('.art-tab-panel.active');
-        const { url, headers, body } = buildRequest(op, activePanel);
-        const curl = generateCurl(op, url, headers, body);
+        const { url, headers, body, isFormData } = buildRequest(op, activePanel);
+        const curl = generateCurl(op, url, headers, body, isFormData);
 
         copyToClipboard(curl);
         showToast('cURL 命令已复制', 'success');

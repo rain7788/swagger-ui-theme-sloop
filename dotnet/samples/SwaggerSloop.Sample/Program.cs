@@ -317,6 +317,146 @@ app.MapGet("/api/stats/top-products", (int? limit) =>
 .WithDescription("获取销量最高的商品列表")
 .WithTags("统计分析");
 
+// ============================================
+// 文件上传 API
+// ============================================
+
+app.MapPost("/api/files/upload", async (IFormFile file) =>
+{
+    if (file == null || file.Length == 0)
+    {
+        return Results.BadRequest(new ApiResponse<object>(false, "请选择要上传的文件", null));
+    }
+
+    var result = new FileUploadResult(
+        file.FileName,
+        file.ContentType,
+        file.Length,
+        Guid.NewGuid().ToString("N") + Path.GetExtension(file.FileName)
+    );
+
+    return Results.Ok(new ApiResponse<FileUploadResult>(true, "文件上传成功", result));
+})
+.WithName("UploadFile")
+.WithSummary("上传单个文件")
+.WithDescription("上传单个文件到服务器，支持任意类型文件")
+.WithTags("文件上传")
+.DisableAntiforgery();
+
+app.MapPost("/api/files/upload-with-info", async (IFormFile file, string? description, string? category) =>
+{
+    if (file == null || file.Length == 0)
+    {
+        return Results.BadRequest(new ApiResponse<object>(false, "请选择要上传的文件", null));
+    }
+
+    var result = new FileUploadWithInfoResult(
+        file.FileName,
+        file.ContentType,
+        file.Length,
+        Guid.NewGuid().ToString("N") + Path.GetExtension(file.FileName),
+        description ?? "",
+        category ?? "默认分类"
+    );
+
+    return Results.Ok(new ApiResponse<FileUploadWithInfoResult>(true, "文件上传成功", result));
+})
+.WithName("UploadFileWithInfo")
+.WithSummary("上传文件并附带信息")
+.WithDescription("上传文件的同时可以附带描述和分类信息")
+.WithTags("文件上传")
+.DisableAntiforgery();
+
+app.MapPost("/api/files/upload-avatar", async (IFormFile avatar, int userId) =>
+{
+    if (avatar == null || avatar.Length == 0)
+    {
+        return Results.BadRequest(new ApiResponse<object>(false, "请选择头像文件", null));
+    }
+
+    // 检查文件类型
+    var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp" };
+    if (!allowedTypes.Contains(avatar.ContentType))
+    {
+        return Results.BadRequest(new ApiResponse<object>(false, "只支持 JPEG、PNG、GIF、WebP 格式的图片", null));
+    }
+
+    var result = new AvatarUploadResult(
+        userId,
+        $"/avatars/{userId}/{Guid.NewGuid():N}{Path.GetExtension(avatar.FileName)}",
+        avatar.Length
+    );
+
+    return Results.Ok(new ApiResponse<AvatarUploadResult>(true, "头像上传成功", result));
+})
+.WithName("UploadAvatar")
+.WithSummary("上传用户头像")
+.WithDescription("上传用户头像图片，支持 JPEG、PNG、GIF、WebP 格式")
+.WithTags("文件上传")
+.DisableAntiforgery();
+
+// ============================================
+// 表单提交 API
+// ============================================
+
+app.MapPost("/api/forms/contact", async (HttpContext context) =>
+{
+    var form = await context.Request.ReadFormAsync();
+    var name = form["name"].ToString();
+    var email = form["email"].ToString();
+    var message = form["message"].ToString();
+
+    if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(message))
+    {
+        return Results.BadRequest(new ApiResponse<object>(false, "姓名、邮箱和消息内容都是必填项", null));
+    }
+
+    var result = new ContactFormResult(
+        Guid.NewGuid().ToString("N"),
+        name,
+        email,
+        message,
+        DateTime.Now
+    );
+
+    return Results.Ok(new ApiResponse<ContactFormResult>(true, "表单提交成功，我们会尽快回复您", result));
+})
+.WithName("SubmitContactForm")
+.WithSummary("提交联系表单")
+.WithDescription("使用 application/x-www-form-urlencoded 格式提交联系表单")
+.WithTags("表单提交")
+.Accepts<ContactFormRequest>("application/x-www-form-urlencoded")
+.DisableAntiforgery();
+
+app.MapPost("/api/forms/feedback", async (HttpContext context) =>
+{
+    var form = await context.Request.ReadFormAsync();
+    var rating = int.TryParse(form["rating"], out var r) ? r : 0;
+    var feedback = form["feedback"].ToString();
+    var email = form["email"].ToString();
+
+    if (rating < 1 || rating > 5)
+    {
+        return Results.BadRequest(new ApiResponse<object>(false, "评分必须在 1-5 之间", null));
+    }
+
+    var result = new FeedbackFormResult(
+        Guid.NewGuid().ToString("N"),
+        rating,
+        feedback,
+        email,
+        DateTime.Now
+    );
+
+    return Results.Ok(new ApiResponse<FeedbackFormResult>(true, "感谢您的反馈", result));
+})
+.WithName("SubmitFeedback")
+.WithSummary("提交反馈表单")
+.WithDescription("使用 application/x-www-form-urlencoded 格式提交用户反馈")
+.WithTags("表单提交")
+.Accepts<FeedbackFormRequest>("application/x-www-form-urlencoded")
+.DisableAntiforgery();
+
 app.Run();
 
 // ============================================
@@ -454,3 +594,59 @@ record SalesData(string Month, decimal Amount, int OrderCount);
 /// <param name="SalesCount">销量</param>
 /// <param name="SalesAmount">销售额</param>
 record TopProduct(int ProductId, string ProductName, int SalesCount, decimal SalesAmount);
+
+// ============================================
+// 文件上传相关模型
+// ============================================
+
+/// <summary>
+/// 文件上传结果
+/// </summary>
+/// <param name="OriginalName">原始文件名</param>
+/// <param name="ContentType">文件类型</param>
+/// <param name="Size">文件大小（字节）</param>
+/// <param name="SavedName">保存后的文件名</param>
+record FileUploadResult(string OriginalName, string ContentType, long Size, string SavedName);
+
+/// <summary>
+/// 带信息的文件上传结果
+/// </summary>
+record FileUploadWithInfoResult(string OriginalName, string ContentType, long Size, string SavedName, string Description, string Category);
+
+/// <summary>
+/// 头像上传结果
+/// </summary>
+/// <param name="UserId">用户ID</param>
+/// <param name="AvatarUrl">头像URL</param>
+/// <param name="Size">文件大小</param>
+record AvatarUploadResult(int UserId, string AvatarUrl, long Size);
+
+// ============================================
+// 表单提交相关模型
+// ============================================
+
+/// <summary>
+/// 联系表单请求
+/// </summary>
+/// <param name="name">姓名</param>
+/// <param name="email">邮箱</param>
+/// <param name="message">留言内容</param>
+record ContactFormRequest(string name, string email, string message);
+
+/// <summary>
+/// 联系表单提交结果
+/// </summary>
+record ContactFormResult(string Id, string Name, string Email, string Message, DateTime SubmittedAt);
+
+/// <summary>
+/// 反馈表单请求
+/// </summary>
+/// <param name="rating">评分 1-5</param>
+/// <param name="feedback">反馈内容</param>
+/// <param name="email">联系邮箱（可选）</param>
+record FeedbackFormRequest(int rating, string feedback, string? email);
+
+/// <summary>
+/// 反馈表单提交结果
+/// </summary>
+record FeedbackFormResult(string Id, int Rating, string Feedback, string Email, DateTime SubmittedAt);

@@ -2,7 +2,7 @@
  * ArtSwagger - Art-Design-Pro Style Swagger UI
  * A beautiful, modern Swagger UI skin with knife4j-like features
  * 
- * @author SeaCode
+ * @author rain7788
  * @license MIT
  */
 
@@ -1691,6 +1691,51 @@ a:hover {
 .art-param-input {
     font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 12px;
+}
+
+/* File Input Styling */
+.art-file-input {
+    font-size: 13px;
+    padding: 6px;
+    border: 1px dashed var(--art-border-color);
+    border-radius: 6px;
+    background: var(--art-bg-page);
+    cursor: pointer;
+    width: 100%;
+    transition: var(--art-transition-fast);
+}
+
+.art-file-input:hover {
+    border-color: var(--art-primary);
+    background: var(--art-primary-bg);
+}
+
+.art-file-input::file-selector-button {
+    padding: 4px 12px;
+    margin-right: 12px;
+    background: var(--art-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--art-transition-fast);
+}
+
+.art-file-input::file-selector-button:hover {
+    background: var(--art-primary-hover);
+}
+
+.art-param-desc {
+    font-size: 11px;
+    color: var(--art-text-secondary);
+    margin-top: 2px;
+}
+
+.art-param-format {
+    font-size: 10px;
+    color: var(--art-text-placeholder);
+    margin-left: 4px;
 }
 
 /* ============================================

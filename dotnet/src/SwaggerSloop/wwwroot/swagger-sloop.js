@@ -1582,7 +1582,7 @@
     }
 
     function buildRequest(op, panel) {
-        let url = new URL(op.path, window.location.origin);
+        let pathname = op.path;
         const headers = {
             'Accept': 'application/json'
         };
@@ -1591,6 +1591,23 @@
         if (state.bearerToken) {
             headers['Authorization'] = `Bearer ${state.bearerToken}`;
         }
+
+        // Collect parameter values from inputs within the panel
+        const paramInputs = panel ? panel.querySelectorAll('[data-param]') : document.querySelectorAll('[data-param]');
+
+        // First pass: replace path parameters
+        paramInputs.forEach(input => {
+            const name = input.dataset.param;
+            const paramIn = input.dataset.in;
+            const value = input.value.trim();
+
+            if (paramIn === 'path' && value) {
+                pathname = pathname.replace(`{${name}}`, encodeURIComponent(value));
+            }
+        });
+
+        // Create URL after path parameters are replaced
+        let url = new URL(pathname, window.location.origin);
 
         // Add global params (from inputs in debug panel if available, else from stored values)
         // Only if global params are enabled
@@ -1621,8 +1638,7 @@
             }
         }
 
-        // Collect parameter values from inputs within the panel
-        const paramInputs = panel ? panel.querySelectorAll('[data-param]') : document.querySelectorAll('[data-param]');
+        // Second pass: handle query and header parameters
         paramInputs.forEach(input => {
             const name = input.dataset.param;
             const paramIn = input.dataset.in;
@@ -1630,9 +1646,7 @@
 
             if (!value) return;
 
-            if (paramIn === 'path') {
-                url = new URL(url.pathname.replace(`{${name}}`, encodeURIComponent(value)), url.origin);
-            } else if (paramIn === 'query') {
+            if (paramIn === 'query') {
                 url.searchParams.set(name, value);
             } else if (paramIn === 'header') {
                 headers[name] = value;

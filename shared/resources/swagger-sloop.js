@@ -1144,7 +1144,7 @@
     // Render request body editor based on content type
     function renderRequestBodyEditor(requestBody) {
         const contentType = requestBody.contentType;
-        
+
         // For multipart/form-data or x-www-form-urlencoded, render form fields
         if (contentType === 'multipart/form-data' || contentType === 'application/x-www-form-urlencoded') {
             const fields = requestBody.fields || [];
@@ -1200,7 +1200,7 @@
                 </div>
             `;
         }
-        
+
         // For JSON or other content types, render textarea
         return `
             <div class="art-card">
@@ -1321,7 +1321,7 @@
         Object.entries(schema.properties).forEach(([name, prop]) => {
             const resolvedProp = resolveRef(prop);
             const isFile = resolvedProp.type === 'string' && (resolvedProp.format === 'binary' || resolvedProp.format === 'base64');
-            
+
             fields.push({
                 name: name,
                 type: isFile ? 'file' : (resolvedProp.type || 'string'),
@@ -1505,12 +1505,12 @@
                 headers: isFormData ? { ...headers } : headers,
                 body: body
             };
-            
+
             // For FormData, remove Content-Type to let browser set it with boundary
             if (isFormData) {
                 delete fetchOptions.headers['Content-Type'];
             }
-            
+
             const response = await fetch(url, fetchOptions);
 
             const endTime = performance.now();
@@ -1582,7 +1582,7 @@
     }
 
     function buildRequest(op, panel) {
-        let url = new URL(op.path, window.location.origin);
+        let pathname = op.path;
         const headers = {
             'Accept': 'application/json'
         };
@@ -1591,6 +1591,23 @@
         if (state.bearerToken) {
             headers['Authorization'] = `Bearer ${state.bearerToken}`;
         }
+
+        // Collect parameter values from inputs within the panel
+        const paramInputs = panel ? panel.querySelectorAll('[data-param]') : document.querySelectorAll('[data-param]');
+        
+        // First pass: replace path parameters
+        paramInputs.forEach(input => {
+            const name = input.dataset.param;
+            const paramIn = input.dataset.in;
+            const value = input.value.trim();
+
+            if (paramIn === 'path' && value) {
+                pathname = pathname.replace(`{${name}}`, encodeURIComponent(value));
+            }
+        });
+        
+        // Create URL after path parameters are replaced
+        let url = new URL(pathname, window.location.origin);
 
         // Add global params (from inputs in debug panel if available, else from stored values)
         // Only if global params are enabled
@@ -1621,8 +1638,7 @@
             }
         }
 
-        // Collect parameter values from inputs within the panel
-        const paramInputs = panel ? panel.querySelectorAll('[data-param]') : document.querySelectorAll('[data-param]');
+        // Second pass: handle query and header parameters
         paramInputs.forEach(input => {
             const name = input.dataset.param;
             const paramIn = input.dataset.in;
@@ -1630,9 +1646,7 @@
 
             if (!value) return;
 
-            if (paramIn === 'path') {
-                url = new URL(url.pathname.replace(`{${name}}`, encodeURIComponent(value)), url.origin);
-            } else if (paramIn === 'query') {
+            if (paramIn === 'query') {
                 url.searchParams.set(name, value);
             } else if (paramIn === 'header') {
                 headers[name] = value;
@@ -1643,11 +1657,11 @@
         let body = null;
         let isFormData = false;
         const formFields = panel ? panel.querySelectorAll('[data-form-field]') : document.querySelectorAll('[data-form-field]');
-        
+
         if (formFields.length > 0) {
             // Determine content type based on whether there are file inputs
             const hasFileInput = Array.from(formFields).some(f => f.dataset.fieldType === 'file' && f.files && f.files.length > 0);
-            
+
             if (hasFileInput) {
                 // Use FormData for file upload (multipart/form-data)
                 body = new FormData();
@@ -1727,7 +1741,7 @@
         activePanel.querySelectorAll('.art-param-input').forEach(input => {
             input.value = '';
         });
-        
+
         // 重置文件输入框
         activePanel.querySelectorAll('.art-file-input').forEach(input => {
             input.value = '';

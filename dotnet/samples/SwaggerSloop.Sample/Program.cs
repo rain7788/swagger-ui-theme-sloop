@@ -8,9 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "SwaggerSloop Demo API", 
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SwaggerSloop Demo API",
         Version = "v1",
         Description = "这是一个演示 SwaggerSloop 功能的示例 API，包含用户管理、商品管理、订单管理等模块。",
         Contact = new OpenApiContact
@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(c =>
             Url = new Uri("https://github.com/rain7788/swagger-sloop")
         }
     });
-    
+
     // 加载 XML 注释文件
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -207,7 +207,7 @@ app.MapGet("/api/orders/{id}", (int id) =>
 
 app.MapPost("/api/orders", (CreateOrderRequest request) =>
 {
-    var order = new Order(1001, request.UserId, request.Items.Select(i => new OrderItem(i.ProductId, "商品名称", i.Price, i.Quantity)).ToArray(), 
+    var order = new Order(1001, request.UserId, request.Items.Select(i => new OrderItem(i.ProductId, "商品名称", i.Price, i.Quantity)).ToArray(),
         request.Items.Sum(i => i.Price * i.Quantity), "待支付", DateTime.Now);
     return Results.Created($"/api/orders/{order.Id}", new ApiResponse<Order>(true, "创建成功", order));
 })

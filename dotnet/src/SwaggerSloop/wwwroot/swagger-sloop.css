@@ -163,7 +163,7 @@ a:hover {
 /* ============================================
    App Layout (Art Design Pro Style)
    ============================================ */
-#art-swagger-app {
+#swagger-sloop-app {
     display: flex;
     flex-direction: row;
     height: 100vh;

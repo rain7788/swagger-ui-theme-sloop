@@ -454,7 +454,7 @@
                     <span class="art-nav-tag-name">${escapeHtml(tag.name)}</span>
                     <span class="art-nav-tag-count">${tag.operations.length}</span>
                 </div>
-                <div class="art-nav-tag-items" style="max-height: ${tag.operations.length * 40}px;">
+                <div class="art-nav-tag-items" style="max-height: ${tag.operations.length * 38}px;">
                     ${tag.operations.map(op => {
             // 优先显示 summary，其次 operationId，最后显示路径
             const displayName = op.summary || op.operationId || op.path;

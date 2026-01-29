@@ -522,7 +522,7 @@ a:hover {
 .art-nav {
     flex: 1;
     overflow-y: auto;
-    padding: 8px 0;
+    padding: 8px 0 80px 0;
 }
 
 .art-nav::-webkit-scrollbar {
@@ -568,27 +568,30 @@ a:hover {
 
 /* Nav Tags (Groups) */
 .art-nav-tag {
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .art-nav-tag-header {
     display: flex;
     align-items: center;
-    padding: 10px 16px;
+    height: 36px;
+    padding: 0 16px;
+    margin: 0 8px;
     cursor: pointer;
     user-select: none;
     transition: var(--art-transition-fast);
+    border-radius: 6px;
 }
 
 .art-nav-tag-header:hover {
-    background: var(--art-bg-hover);
+    background: var(--art-gray-200);
 }
 
 .art-nav-tag-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 10px;
-    color: var(--art-text-secondary);
+    width: 13px;
+    height: 13px;
+    margin-right: 8px;
+    color: var(--art-gray-600);
     transition: var(--art-transition-fast);
 }
 
@@ -599,8 +602,8 @@ a:hover {
 .art-nav-tag-name {
     flex: 1;
     font-weight: 500;
-    color: var(--art-text-primary);
-    font-size: 15px;
+    color: var(--art-gray-600);
+    font-size: 14px;
 }
 
 .art-nav-tag-header:hover .art-nav-tag-name {
@@ -609,11 +612,11 @@ a:hover {
 
 .art-nav-tag-count {
     padding: 2px 8px;
-    background: var(--art-bg-hover);
+    background: var(--art-gray-200);
     border-radius: 10px;
     font-size: 12px;
     font-weight: 400;
-    color: var(--art-text-secondary);
+    color: var(--art-gray-600);
 }
 
 .dark .art-nav-tag-count {
@@ -633,16 +636,17 @@ a:hover {
 .art-nav-item {
     display: flex;
     align-items: center;
-    padding: 10px 16px 10px 42px;
+    height: 36px;
+    padding: 0 16px 0 40px;
+    margin: 0 8px 2px 8px;
     cursor: pointer;
     transition: var(--art-transition-fast);
     gap: 8px;
-    border-left: 3px solid transparent;
-    margin-left: -3px;
+    border-radius: 6px;
 }
 
 .art-nav-item:hover {
-    background: var(--art-bg-hover);
+    background: var(--art-gray-200);
 }
 
 .art-nav-item.active {
@@ -654,12 +658,7 @@ a:hover {
     font-weight: 500;
 }
 
-/* 左侧边框颜色区分方法类型 */
-.art-nav-item.method-get { border-left-color: var(--art-method-get); }
-.art-nav-item.method-post { border-left-color: var(--art-method-post); }
-.art-nav-item.method-put { border-left-color: var(--art-method-put); }
-.art-nav-item.method-delete { border-left-color: var(--art-method-delete); }
-.art-nav-item.method-patch { border-left-color: var(--art-method-patch); }
+/* 方法类型样式（仅用于主内容区的方法徽章） */
 
 /* 隐藏左侧菜单中的方法徽章 */
 .art-nav-item .art-method-badge {
@@ -715,7 +714,7 @@ a:hover {
 .art-nav-item-path {
     flex: 1;
     font-size: 14px;
-    color: var(--art-text-primary);
+    color: var(--art-gray-600);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

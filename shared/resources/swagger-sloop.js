@@ -190,6 +190,22 @@
                 elements.tabsBar.scrollLeft += e.deltaY;
             }
         }, { passive: false });
+
+        // 全局参数区域的事件委托 - 在 content 容器级别处理，确保切换接口后仍然有效
+        elements.content.addEventListener('click', (e) => {
+            const header = e.target.closest('.art-global-params-header');
+            if (!header) return;
+
+            const checkbox = e.target.closest('[data-action="toggle-global-params-enabled"]');
+            if (checkbox) {
+                // 点击的是 checkbox，切换启用状态
+                e.stopPropagation();
+                toggleGlobalParamsEnabled(e);
+                return;
+            }
+            // 点击 header 其他区域，展开/收起
+            toggleGlobalParamsSection(e);
+        });
     }
 
     function handleGlobalKeydown(e) {
@@ -740,6 +756,21 @@
         elements.apiNav.querySelectorAll('.art-nav-item').forEach(item => {
             const isActive = item.dataset.path === path && item.dataset.method === method;
             item.classList.toggle('active', isActive);
+
+            // 如果是当前激活的项，自动展开其所在的分类
+            if (isActive) {
+                const parentTag = item.closest('.art-nav-tag');
+                if (parentTag && parentTag.classList.contains('collapsed')) {
+                    // 收起其他分类
+                    elements.apiNav.querySelectorAll('.art-nav-tag').forEach(tag => {
+                        if (tag !== parentTag) {
+                            tag.classList.add('collapsed');
+                        }
+                    });
+                    // 展开当前分类
+                    parentTag.classList.remove('collapsed');
+                }
+            }
         });
     }
 
@@ -1139,6 +1170,7 @@
                 });
             });
         });
+        // 注意：全局参数区域的点击事件已通过 initEventListeners 中的事件委托处理
     }
 
     // Render request body editor based on content type
@@ -2076,9 +2108,9 @@
 
         return `
             <div class="art-global-params-section ${expandedClass}" id="globalParamsSection">
-                <div class="art-global-params-header" onclick="window.SwaggerSloop.toggleGlobalParamsSection(event)">
+                <div class="art-global-params-header" data-action="toggle-global-params">
                     <svg class="art-icon art-global-params-toggle" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
-                    <div class="${checkboxClass}" onclick="window.SwaggerSloop.toggleGlobalParamsEnabled(event)">
+                    <div class="${checkboxClass}" data-action="toggle-global-params-enabled">
                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
                     </div>
                     <span class="art-global-params-title">全局参数</span>
@@ -2116,12 +2148,21 @@
 
     function toggleGlobalParamsSection(e) {
         // 如果点击的是 checkbox 区域，不展开/折叠
-        if (e.target.closest('.art-global-params-checkbox')) return;
+        if (e && e.target && e.target.closest('.art-global-params-checkbox')) return;
 
-        const section = document.getElementById('globalParamsSection');
+        // 阻止事件冒泡，避免重复触发
+        if (e && e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        // 从点击的 header 向上查找对应的 section（而不是用 getElementById，因为可能有多个面板）
+        const header = e.target.closest('.art-global-params-header');
+        const section = header ? header.closest('.art-global-params-section') : null;
+
         if (section) {
-            section.classList.toggle('expanded');
-            state.globalParamsExpanded = section.classList.contains('expanded');
+            const isCurrentlyExpanded = section.classList.contains('expanded');
+            section.classList.toggle('expanded', !isCurrentlyExpanded);
+            state.globalParamsExpanded = !isCurrentlyExpanded;
         }
     }
 

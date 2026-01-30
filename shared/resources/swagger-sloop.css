@@ -2121,14 +2121,17 @@ a:hover {
 /* Global Params in Debug Section */
 .art-global-params-section {
     margin-bottom: 16px;
+    border-radius: var(--art-border-radius);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .art-global-params-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: var(--art-bg-elevated);
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--art-bg-card);
     border: 1px solid var(--art-border-color);
     border-radius: var(--art-border-radius);
     cursor: pointer;
@@ -2138,22 +2141,26 @@ a:hover {
 
 .art-global-params-header:hover {
     background: var(--art-bg-hover);
+    border-color: var(--art-border-color);
 }
 
 .art-global-params-section.expanded .art-global-params-header {
     border-radius: var(--art-border-radius) var(--art-border-radius) 0 0;
-    border-bottom: none;
+    border-bottom: 1px solid var(--art-border-light);
+    background: var(--art-bg-elevated);
 }
 
 .art-global-params-toggle {
     width: 16px;
     height: 16px;
-    color: var(--art-text-secondary);
+    color: var(--art-text-tertiary);
     transition: var(--art-transition-fast);
+    flex-shrink: 0;
 }
 
 .art-global-params-section.expanded .art-global-params-toggle {
     transform: rotate(90deg);
+    color: var(--art-text-secondary);
 }
 
 .art-global-params-checkbox {
@@ -2163,16 +2170,21 @@ a:hover {
     width: 18px;
     height: 18px;
     background: var(--art-bg-card);
-    border: 1px solid var(--art-border-color);
+    border: 1.5px solid var(--art-border-color);
     border-radius: 4px;
     color: transparent;
     transition: var(--art-transition-fast);
     cursor: pointer;
+    flex-shrink: 0;
+}
+
+.art-global-params-checkbox:hover {
+    border-color: var(--art-primary);
 }
 
 .art-global-params-checkbox.checked {
-    background: var(--art-success);
-    border-color: var(--art-success);
+    background: var(--art-primary);
+    border-color: var(--art-primary);
     color: white;
 }
 
@@ -2189,19 +2201,22 @@ a:hover {
 }
 
 .art-global-params-badge {
-    padding: 2px 8px;
-    background: var(--art-gray-200);
-    border-radius: 10px;
+    padding: 3px 10px;
+    background: var(--art-primary);
+    border-radius: 12px;
     font-size: 11px;
-    color: var(--art-text-secondary);
+    font-weight: 500;
+    color: white;
+    min-width: 20px;
+    text-align: center;
 }
 
 .art-global-params-table {
     display: none;
+    background: var(--art-bg-card);
     border: 1px solid var(--art-border-color);
     border-top: none;
     border-radius: 0 0 var(--art-border-radius) var(--art-border-radius);
-    overflow: hidden;
 }
 
 .art-global-params-section.expanded .art-global-params-table {
@@ -2214,19 +2229,78 @@ a:hover {
 }
 
 .art-global-params-table .art-params-table thead th {
-    border-top: none;
-    border-bottom: none;
+    padding: 10px 16px;
     background: var(--art-bg-elevated);
+    color: var(--art-text-secondary);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--art-border-light);
 }
 
-.art-global-params-table .art-params-table tbody tr:first-child td {
-    border-top: 1px solid var(--art-border-light);
+.art-global-params-table .art-params-table thead th:first-child {
+    border-radius: 0;
+}
+
+.art-global-params-table .art-params-table thead th:last-child {
+    border-radius: 0;
+}
+
+.art-global-params-table .art-params-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--art-border-light);
+    vertical-align: middle;
+}
+
+.art-global-params-table .art-params-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.art-global-params-table .art-params-table tbody tr:hover td {
+    background: var(--art-bg-hover);
+}
+
+.art-global-params-table .art-param-name {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--art-text-primary);
+    background: var(--art-bg-elevated);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.art-global-params-table .art-param-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    text-transform: lowercase;
+}
+
+.art-global-params-table .art-param-type.header {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--art-info);
+}
+
+.art-global-params-table .art-param-type.query {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--art-warning);
+}
+
+.art-global-params-table .art-param-type.cookie {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
 }
 
 .art-global-input {
     width: 100%;
-    padding: 6px 10px;
-    background: var(--art-bg-card);
+    padding: 8px 12px;
+    background: var(--art-bg-elevated);
     border: 1px solid var(--art-border-color);
     border-radius: var(--art-border-radius-sm);
     color: var(--art-text-primary);
@@ -2235,8 +2309,19 @@ a:hover {
     transition: var(--art-transition);
 }
 
+.art-global-input:hover {
+    border-color: var(--art-border-color);
+    background: var(--art-bg-card);
+}
+
 .art-global-input:focus {
     border-color: var(--art-primary);
+    background: var(--art-bg-card);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.art-global-input::placeholder {
+    color: var(--art-text-tertiary);
 }
 
 /* ============================================

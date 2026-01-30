@@ -1516,11 +1516,72 @@
             const endTime = performance.now();
             const duration = Math.round(endTime - startTime);
 
-            // Get response body
-            let responseText = '';
+            // Get response content type
             const contentType = response.headers.get('content-type') || '';
+            const contentDisposition = response.headers.get('content-disposition') || '';
 
-            if (contentType.includes('application/json')) {
+            // Check if this is a file download response
+            const isFileDownload = contentDisposition.includes('attachment') ||
+                contentType.includes('application/octet-stream') ||
+                contentType.includes('application/pdf') ||
+                contentType.includes('application/zip') ||
+                contentType.includes('application/vnd') ||
+                contentType.includes('image/') ||
+                contentType.includes('audio/') ||
+                contentType.includes('video/');
+
+            let responseText = '';
+
+            if (isFileDownload && response.ok) {
+                // Handle file download
+                const blob = await response.blob();
+
+                // Extract filename from content-disposition or generate one
+                let filename = 'download';
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^'";]+)['"]?/i);
+                    if (filenameMatch) {
+                        filename = decodeURIComponent(filenameMatch[1]);
+                    }
+                }
+
+                // If no filename in header, try to get from URL or use content-type
+                if (filename === 'download') {
+                    const urlPath = new URL(url).pathname;
+                    const urlFilename = urlPath.split('/').pop();
+                    if (urlFilename && urlFilename.includes('.')) {
+                        filename = urlFilename;
+                    } else {
+                        // Add extension based on content type
+                        const extMap = {
+                            'application/pdf': '.pdf',
+                            'application/zip': '.zip',
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+                            'image/png': '.png',
+                            'image/jpeg': '.jpg',
+                            'image/gif': '.gif',
+                            'text/csv': '.csv',
+                        };
+                        const ext = extMap[contentType.split(';')[0]] || '';
+                        filename = 'download' + ext;
+                    }
+                }
+
+                // Trigger download
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+
+                responseText = `📥 文件下载成功\n\n文件名: ${filename}\n大小: ${formatFileSize(blob.size)}\n类型: ${contentType}`;
+                showToast(`文件 "${filename}" 已开始下载`, 'success');
+
+            } else if (contentType.includes('application/json')) {
                 const json = await response.json();
                 responseText = JSON.stringify(json, null, 2);
             } else {
@@ -1540,7 +1601,7 @@
 
             const responseBody = activePanel.querySelector('#responseBody');
             if (responseBody) {
-                if (contentType.includes('application/json')) {
+                if (contentType.includes('application/json') && !isFileDownload) {
                     responseBody.innerHTML = highlightJson(responseText);
                 } else {
                     responseBody.textContent = responseText;
@@ -2158,6 +2219,14 @@
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     function capitalize(str) {

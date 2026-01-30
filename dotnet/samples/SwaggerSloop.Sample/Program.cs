@@ -396,6 +396,146 @@ app.MapPost("/api/files/upload-avatar", async (IFormFile avatar, int userId) =>
 .DisableAntiforgery();
 
 // ============================================
+// 文件下载 API
+// ============================================
+
+app.MapGet("/api/files/download/sample-text", () =>
+{
+    var content = "这是一个示例文本文件的内容。\n\nSwaggerSloop 文件下载测试\n\n创建时间: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+    return Results.File(bytes, "text/plain", "sample.txt");
+})
+.WithName("DownloadSampleText")
+.WithSummary("下载示例文本文件")
+.WithDescription("下载一个示例的文本文件，用于测试文件下载功能")
+.WithTags("文件下载")
+.Produces(200, contentType: "text/plain");
+
+app.MapGet("/api/files/download/sample-csv", () =>
+{
+    var csv = "ID,姓名,邮箱,创建时间\n1,张三,zhangsan@example.com,2024-01-15\n2,李四,lisi@example.com,2024-01-16\n3,王五,wangwu@example.com,2024-01-17";
+    var bytes = System.Text.Encoding.UTF8.GetPreamble().Concat(System.Text.Encoding.UTF8.GetBytes(csv)).ToArray();
+    return Results.File(bytes, "text/csv", "users-export.csv");
+})
+.WithName("DownloadSampleCsv")
+.WithSummary("下载示例 CSV 文件")
+.WithDescription("导出用户数据为 CSV 格式文件")
+.WithTags("文件下载")
+.Produces(200, contentType: "text/csv");
+
+app.MapGet("/api/files/download/sample-json", () =>
+{
+    var data = new
+    {
+        title = "SwaggerSloop 数据导出",
+        exportTime = DateTime.Now,
+        records = new[]
+        {
+            new { id = 1, name = "商品A", price = 99.99 },
+            new { id = 2, name = "商品B", price = 199.99 },
+            new { id = 3, name = "商品C", price = 299.99 }
+        }
+    };
+    var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+    var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+    return Results.File(bytes, "application/json", "data-export.json");
+})
+.WithName("DownloadSampleJson")
+.WithSummary("下载示例 JSON 文件")
+.WithDescription("导出数据为 JSON 格式文件")
+.WithTags("文件下载")
+.Produces(200, contentType: "application/json");
+
+app.MapGet("/api/files/download/report/{format}", (string format) =>
+{
+    format = format.ToLower();
+
+    return format switch
+    {
+        "pdf" => Results.File(
+            GenerateSamplePdf(),
+            "application/pdf",
+            $"report-{DateTime.Now:yyyyMMdd}.pdf"
+        ),
+        "xlsx" => Results.File(
+            GenerateSampleExcel(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"report-{DateTime.Now:yyyyMMdd}.xlsx"
+        ),
+        _ => Results.BadRequest(new ApiResponse<object>(false, "不支持的格式，请使用 pdf 或 xlsx", null))
+    };
+})
+.WithName("DownloadReport")
+.WithSummary("下载报表文件")
+.WithDescription("下载指定格式的报表文件，支持 PDF 和 Excel 格式")
+.WithTags("文件下载");
+
+app.MapGet("/api/files/download/image", () =>
+{
+    // 生成一个简单的 1x1 像素 PNG 图片 (最小有效 PNG)
+    var pngBytes = new byte[] {
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,  // PNG signature
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,  // IHDR chunk
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,  // 1x1 size
+        0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+        0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41,  // IDAT chunk
+        0x54, 0x08, 0xD7, 0x63, 0xF8, 0x0F, 0x00, 0x00,
+        0x01, 0x01, 0x00, 0x05, 0x18, 0xD8, 0x4D, 0x4D,
+        0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,  // IEND chunk
+        0xAE, 0x42, 0x60, 0x82
+    };
+    return Results.File(pngBytes, "image/png", "sample-image.png");
+})
+.WithName("DownloadImage")
+.WithSummary("下载示例图片")
+.WithDescription("下载一个示例图片文件")
+.WithTags("文件下载")
+.Produces(200, contentType: "image/png");
+
+// Helper functions for generating sample files
+static byte[] GenerateSamplePdf()
+{
+    // 生成一个最小的有效 PDF 文件
+    var pdfContent = @"%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 44 >>
+stream
+BT /F1 12 Tf 100 700 Td (SwaggerSloop Report) Tj ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000206 00000 n 
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+300
+%%EOF";
+    return System.Text.Encoding.ASCII.GetBytes(pdfContent);
+}
+
+static byte[] GenerateSampleExcel()
+{
+    // 返回一个简单的占位字节数组（真实场景需要用库生成）
+    // 这里返回一个带有标识的简单文件
+    var content = "PK\x03\x04 - This is a placeholder for Excel file. Use a proper library like EPPlus or ClosedXML in production.";
+    return System.Text.Encoding.UTF8.GetBytes(content);
+}
+
+// ============================================
 // 表单提交 API
 // ============================================
 

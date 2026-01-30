@@ -637,7 +637,7 @@ a:hover {
     display: flex;
     align-items: center;
     height: 36px;
-    padding: 0 16px 0 40px;
+    padding: 0 16px 0 16px;
     margin: 0 8px 2px 8px;
     cursor: pointer;
     transition: var(--art-transition-fast);
@@ -660,9 +660,51 @@ a:hover {
 
 /* 方法类型样式（仅用于主内容区的方法徽章） */
 
-/* 隐藏左侧菜单中的方法徽章 */
+/* 左侧菜单中的方法徽章 - 方案B变体：深灰色文字，hover彩色 */
 .art-nav-item .art-method-badge {
-    display: none;
+    display: inline-flex;
+    min-width: 40px;
+    padding: 0;
+    font-size: 10px;
+    font-weight: 500;
+    background: transparent !important;
+    border: none;
+    border-radius: 0;
+    color: var(--art-gray-500) !important;
+    transition: color 0.15s ease;
+}
+
+/* 激活态和悬停态显示方法对应颜色 */
+.art-nav-item.active .art-method-badge.get,
+.art-nav-item:hover .art-method-badge.get {
+    color: var(--art-method-get) !important;
+}
+
+.art-nav-item.active .art-method-badge.post,
+.art-nav-item:hover .art-method-badge.post {
+    color: var(--art-method-post) !important;
+}
+
+.art-nav-item.active .art-method-badge.put,
+.art-nav-item:hover .art-method-badge.put {
+    color: var(--art-method-put) !important;
+}
+
+.art-nav-item.active .art-method-badge.delete,
+.art-nav-item:hover .art-method-badge.delete {
+    color: var(--art-method-delete) !important;
+}
+
+.art-nav-item.active .art-method-badge.patch,
+.art-nav-item:hover .art-method-badge.patch {
+    color: var(--art-method-patch) !important;
+}
+
+.art-nav-item.active .art-method-badge.options,
+.art-nav-item.active .art-method-badge.head,
+.art-nav-item:hover .art-method-badge.options,
+.art-nav-item:hover .art-method-badge.head {
+    color: var(--art-method-options) !important;
 }
 
 /* Method Badge */

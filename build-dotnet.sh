@@ -7,10 +7,10 @@ set -e
 
 VERSION=${1:-"1.0.0"}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$SCRIPT_DIR/dotnet/src/ArtSwagger"
+PROJECT_DIR="$SCRIPT_DIR/dotnet/src/SwaggerSloop"
 OUTPUT_DIR="$SCRIPT_DIR/artifacts/nuget"
 
-echo "🔨 Building ArtSwagger for .NET..."
+echo "🔨 Building Swagger Sloop for .NET..."
 echo "Version: $VERSION"
 
 # Clean
@@ -28,4 +28,4 @@ dotnet pack -c Release -o "$OUTPUT_DIR" /p:Version="$VERSION"
 echo "✅ NuGet package created at: $OUTPUT_DIR"
 echo ""
 echo "To publish to NuGet.org:"
-echo "  dotnet nuget push $OUTPUT_DIR/ArtSwagger.$VERSION.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json"
+echo "  dotnet nuget push $OUTPUT_DIR/SwaggerSloop.$VERSION.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json"

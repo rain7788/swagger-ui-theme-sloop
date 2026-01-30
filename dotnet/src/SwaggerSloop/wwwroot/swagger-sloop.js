@@ -1,5 +1,5 @@
 /**
- * ArtSwagger - Art-Design-Pro Style Swagger UI
+ * Swagger Sloop - Art-Design-Pro Style Swagger UI
  * A beautiful, modern Swagger UI skin with knife4j-like features
  * 
  * @author rain7788
@@ -33,7 +33,7 @@
     // ============================================
     // Configuration
     // ============================================
-    const config = window.ArtSwaggerConfig || {
+    const config = window.SwaggerSloopConfig || {
         urls: [],
         primaryColor: '#5D87FF',
         defaultTheme: 'auto',
@@ -715,7 +715,7 @@
         const homeTab = `
             <div class="art-tab-item home ${!state.activeTabId ? 'active' : ''}" 
                  data-tab-id="home" 
-                 onclick="ArtSwagger.showWelcome()">
+                 onclick="SwaggerSloop.showWelcome()">
                 <svg viewBox="0 0 24 24" width="14" height="14" style="flex-shrink:0"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
                 <span class="art-tab-title">概览</span>
             </div>
@@ -724,10 +724,10 @@
         const apiTabs = state.openTabs.map(tab => `
             <div class="art-tab-item method-${tab.method} ${tab.id === state.activeTabId ? 'active' : ''}" 
                  data-tab-id="${tab.id}" 
-                 onclick="ArtSwagger.activateTab('${tab.id}')">
+                 onclick="SwaggerSloop.activateTab('${tab.id}')">
                 <span class="art-tab-method ${tab.method}">${tab.method.toUpperCase()}</span>
                 <span class="art-tab-title">${escapeHtml(tab.title)}</span>
-                <span class="art-tab-close" onclick="ArtSwagger.closeTab('${tab.id}', event)">
+                <span class="art-tab-close" onclick="SwaggerSloop.closeTab('${tab.id}', event)">
                     <svg viewBox="0 0 24 24" width="12" height="12"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" fill="currentColor"/></svg>
                 </span>
             </div>
@@ -837,7 +837,7 @@
                         ${op.tags.map(t => `<span class="art-api-tag">${escapeHtml(t)}</span>`).join('')}
                         ${op.deprecated ? '<span class="art-deprecated-badge">已废弃</span>' : ''}
                     </span>
-                    <button class="art-btn art-btn-secondary art-btn-icon" onclick="ArtSwagger.copyAsCurl()" title="复制 cURL">
+                    <button class="art-btn art-btn-secondary art-btn-icon" onclick="SwaggerSloop.copyAsCurl()" title="复制 cURL">
                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
                     </button>
                 </div>
@@ -994,11 +994,11 @@
             <div class="art-main-tab-content" id="tabDebug">
                 <!-- Execute Actions Bar (Top) -->
                 <div class="art-action-bar art-action-bar-top">
-                    <button class="art-btn art-btn-primary art-btn-execute" onclick="ArtSwagger.executeRequest()">
+                    <button class="art-btn art-btn-primary art-btn-execute" onclick="SwaggerSloop.executeRequest()">
                         <svg class="art-icon" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M8 5v14l11-7L8 5z" fill="currentColor"/></svg>
                         发送请求
                     </button>
-                    <button class="art-btn art-btn-secondary" onclick="ArtSwagger.clearInputs()">
+                    <button class="art-btn art-btn-secondary" onclick="SwaggerSloop.clearInputs()">
                         <svg class="art-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill="currentColor"/></svg>
                         重置
                     </button>
@@ -1072,7 +1072,7 @@
                             <div class="art-code-block">
                                 <div class="art-code-header">
                                     <span class="art-code-lang">JSON</span>
-                                    <button class="art-code-copy" onclick="ArtSwagger.copyResponse()">
+                                    <button class="art-code-copy" onclick="SwaggerSloop.copyResponse()">
                                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
                                         复制
                                     </button>
@@ -1093,7 +1093,7 @@
                             <div class="art-code-block">
                                 <div class="art-code-header">
                                     <span class="art-code-lang">Shell</span>
-                                    <button class="art-code-copy" onclick="ArtSwagger.copyCurlCommand()">
+                                    <button class="art-code-copy" onclick="SwaggerSloop.copyCurlCommand()">
                                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
                                         复制
                                     </button>
@@ -1211,7 +1211,7 @@
                     </span>
                     <div class="art-card-actions">
                         <span class="art-card-subtitle">${contentType}</span>
-                        <button class="art-btn art-btn-text" onclick="ArtSwagger.formatRequestBody()">
+                        <button class="art-btn art-btn-text" onclick="SwaggerSloop.formatRequestBody()">
                             <svg class="art-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z" fill="currentColor"/></svg>
                             格式化
                         </button>
@@ -1916,10 +1916,10 @@
                             <td><span class="art-param-type ${p.type}">${p.type}</span></td>
                             <td>
                                 <div class="art-param-actions">
-                                    <button onclick="ArtSwagger.editParam(${i})" title="编辑">
+                                    <button onclick="SwaggerSloop.editParam(${i})" title="编辑">
                                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
                                     </button>
-                                    <button class="delete" onclick="ArtSwagger.deleteParam(${i})" title="删除">
+                                    <button class="delete" onclick="SwaggerSloop.deleteParam(${i})" title="删除">
                                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
                                     </button>
                                 </div>
@@ -2015,9 +2015,9 @@
 
         return `
             <div class="art-global-params-section ${expandedClass}" id="globalParamsSection">
-                <div class="art-global-params-header" onclick="window.ArtSwagger.toggleGlobalParamsSection(event)">
+                <div class="art-global-params-header" onclick="window.SwaggerSloop.toggleGlobalParamsSection(event)">
                     <svg class="art-icon art-global-params-toggle" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/></svg>
-                    <div class="${checkboxClass}" onclick="window.ArtSwagger.toggleGlobalParamsEnabled(event)">
+                    <div class="${checkboxClass}" onclick="window.SwaggerSloop.toggleGlobalParamsEnabled(event)">
                         <svg class="art-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
                     </div>
                     <span class="art-global-params-title">全局参数</span>
@@ -2175,7 +2175,7 @@
     // ============================================
     // Public API
     // ============================================
-    window.ArtSwagger = {
+    window.SwaggerSloop = {
         // Core
         init,
 

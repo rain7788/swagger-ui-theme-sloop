@@ -7,8 +7,8 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SHARED_DIR="$SCRIPT_DIR/shared/resources"
-DOTNET_DIR="$SCRIPT_DIR/dotnet/src/ArtSwagger/wwwroot"
-JAVA_DIR="$SCRIPT_DIR/java/art-swagger-spring-boot-starter/src/main/resources/static/art-swagger"
+DOTNET_DIR="$SCRIPT_DIR/dotnet/src/SwaggerSloop/wwwroot"
+JAVA_DIR="$SCRIPT_DIR/java/swagger-sloop-spring-boot-starter/src/main/resources/static/swagger-sloop"
 
 echo "📦 Syncing shared resources..."
 

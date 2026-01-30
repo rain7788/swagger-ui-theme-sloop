@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR/java/art-swagger-spring-boot-starter"
 OUTPUT_DIR="$SCRIPT_DIR/artifacts/maven"
 
-echo "🔨 Building ArtSwagger for Java..."
+echo "🔨 Building Swagger Sloop for Java..."
 echo "Version: $VERSION"
 
 # Clean

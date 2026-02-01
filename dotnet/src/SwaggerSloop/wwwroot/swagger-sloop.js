@@ -1532,8 +1532,8 @@
         const activePanel = document.querySelector('.art-tab-panel.active');
         if (!activePanel) return;
 
-        // Get execute button and prevent multiple clicks
-        const executeBtn = document.getElementById('executeBtn');
+        // Get execute button from active panel (not global getElementById, as multiple panels may have same id)
+        const executeBtn = activePanel.querySelector('#executeBtn');
         if (executeBtn && executeBtn.classList.contains('art-loading')) return;
 
         // Set loading state
